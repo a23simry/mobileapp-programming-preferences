@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
 
 
+
+
     }
 
 

@@ -40,11 +40,6 @@ public class SecondActivity extends AppCompatActivity {
         myPreferenceEditor.putString("MyAppPreferenceString", newPrefText.getText().toString());
         myPreferenceEditor.apply();
 
-        // Display the new preference
-        TextView prefTextRef=new TextView(this);
-        prefTextRef=(TextView)findViewById(R.id.prefText);
-        prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
-
         // Clear the EditText
         newPrefText.setText("");
 
