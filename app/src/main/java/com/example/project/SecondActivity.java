@@ -20,9 +20,9 @@ public class SecondActivity extends AppCompatActivity {
         myPreferenceRef = getSharedPreferences("MyPreferenceName", MODE_PRIVATE);
         myPreferenceEditor = myPreferenceRef.edit();
 
-        // Display preferences
-        TextView prefTextRef=new TextView(this);
-        prefTextRef=(TextView)findViewById(R.id.prefText);
-        prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
+        // Display preferences DONT NEED?
+        //TextView prefTextRef=new TextView(this);
+        //prefTextRef=(TextView)findViewById(R.id.prefText);
+       // prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
     }
 }
