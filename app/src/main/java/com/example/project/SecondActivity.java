@@ -2,17 +2,21 @@ package com.example.project;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class SecondActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity implements View.OnClickListener{
 
     private SharedPreferences myPreferenceRef;
     private SharedPreferences.Editor myPreferenceEditor;
+    private EditText newPrefText;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,31 +24,31 @@ public class SecondActivity extends AppCompatActivity {
         setContentView(R.layout.activity_second);
 
         // Get a reference to the shared preference
-        myPreferenceRef = getSharedPreferences("MyPreferenceName", MODE_PRIVATE);
+        myPreferenceRef = getSharedPreferences("MyAppPreferenceString",MODE_PRIVATE);
         myPreferenceEditor = myPreferenceRef.edit();
 
-        // Display preferences DONT NEED?
-        //TextView prefTextRef=new TextView(this);
-        //prefTextRef=(TextView)findViewById(R.id.prefText);
-       // prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
+        newPrefText = new EditText(this);
+        newPrefText = findViewById(R.id.settingseditview);
+
+        button = findViewById(R.id.goToFirst);
+        button.setOnClickListener(SecondActivity.this);
 
     }
 
-    public void savePref(View v){
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent(SecondActivity.this, MainActivity.class);
+        startActivity(intent);
 
-        // Get the text
-        EditText newPrefText=new EditText(this);
-        newPrefText=(EditText)findViewById(R.id.settingseditview);
+    }
 
+    public void savePref(View view){
         // Store the new preference
         myPreferenceEditor.putString("MyAppPreferenceString", newPrefText.getText().toString());
         myPreferenceEditor.apply();
 
         // Clear the EditText
         newPrefText.setText("");
-
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
 
     }
 }
