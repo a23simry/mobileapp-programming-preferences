@@ -1,42 +1,175 @@
 
 # Rapport
+MainActivity was set up to read shared preferences on creation, and setting it to a textView. A button and onClick event was created to be able to swap activities. 
+SecondActivity was created and set up with an EditText view which writes to shared preferences when "save" button is pressed through a "savePref" method.
+Another button was created to swap back to MainActivity. 
 
-**Skriv din rapport här!**
-
-_Du kan ta bort all text som finns sedan tidigare_.
-
-## Följande grundsyn gäller dugga-svar:
-
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
-
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
 
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private SharedPreferences myPreferenceRef;
+    private Button button;
+    private TextView prefTextRef;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        myPreferenceRef = getSharedPreferences("MyAppPreferenceString",MODE_PRIVATE);
+
+        prefTextRef = new TextView(this);
+        prefTextRef = findViewById(R.id.prefText);
+
+        prefTextRef.setText(myPreferenceRef.getString("MyAppPreferenceString", "No preference found."));
+
+        button = findViewById(R.id.goToSecond);
+        button.setOnClickListener(MainActivity.this);
+
     }
+
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+        startActivity(intent);
+    }
+    
+}
+
+------|
+
+public class SecondActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private SharedPreferences myPreferenceRef;
+    private SharedPreferences.Editor myPreferenceEditor;
+    private EditText newPrefText;
+    private Button button;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+
+        // Get a reference to the shared preference
+        myPreferenceRef = getSharedPreferences("MyAppPreferenceString",MODE_PRIVATE);
+        myPreferenceEditor = myPreferenceRef.edit();
+
+        newPrefText = new EditText(this);
+        newPrefText = findViewById(R.id.settingseditview);
+
+        button = findViewById(R.id.goToFirst);
+        button.setOnClickListener(SecondActivity.this);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent(SecondActivity.this, MainActivity.class);
+        startActivity(intent);
+
+    }
+
+    public void savePref(View view){
+        // Store the new preference
+        myPreferenceEditor.putString("MyAppPreferenceString", newPrefText.getText().toString());
+        myPreferenceEditor.apply();
+
+        // Clear the EditText
+        newPrefText.setText("");
+
+    }
+
+------|activity_main.xml
+
+    <TextView
+        android:id="@+id/prefText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/goToSecond"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/goToSecond" />
+
+    <Button
+        android:id="@+id/goToSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/swap"
+        app:layout_constraintBottom_toTopOf="@+id/prefText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
+
+------|activity_second.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondActivity">
+
+    <Button
+        android:id="@+id/prefButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:onClick="savePref"
+        android:text="@string/save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingseditview" />
+
+    <Button
+        android:id="@+id/goToFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/swap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/prefButton" />
+
+    <EditText
+        android:id="@+id/settingseditview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/prefButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+------|strings.xml
+
+    <string name="save">save</string>
+    <string name="swap">swap</string>
+    
+------|
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation "androidx.preference:preference-ktx:1.1.0"
+    implementation 'androidx.preference:preference:1.1.0'
 }
 ```
 
-Bilder läggs i samma mapp som markdown-filen.
-
-![](android.png)
-
-Läs gärna:
-
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.
+![](bild1.png)
+![](bild2.png)
